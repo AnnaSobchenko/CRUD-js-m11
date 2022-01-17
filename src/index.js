@@ -29,7 +29,8 @@ function renderPostList() {
         post => `<li data-id="${post.id}">
         <h3>${post.title}</h3>
         <p>${post.text}</p>
-        <small>${post.author}</small></p></li>`,
+        <button>EDIT</button> 
+        <small> ${post.author}</small></p></li>`,
       )
       .join('');
     refs.listNode.innerHTML = markup;
@@ -37,6 +38,18 @@ function renderPostList() {
 }
 
 renderPostList();
+refs.listNode.addEventListener('click', editPost);
+
+function editPost(e) {
+  if (e.target.nodeName !== 'BUTTON') return;
+  const id = e.target.closest('li').dataset.id;
+  reqServer('/posts/' + id).then(data => {
+    refs.form.elements.text.value = data.text;
+    refs.form.elements.author.value = data.author;
+    refs.form.elements.title.value = data.title;
+    refs.form.elements.id.value = data.id;
+  });
+}
 
 refs.form.addEventListener('keydown', e => {
   if (e.code === 'Enter' && e.shiftKey) {
@@ -46,9 +59,17 @@ refs.form.addEventListener('keydown', e => {
       author: refs.form.elements.author.value,
       title: refs.form.elements.title.value,
     };
-    reqServer('/posts', 'POST', data).then(data => {
+    const updateForm = data => {
       refs.form.reset();
+      refs.form.elements.id.value = '';
       renderPostList();
-    });
+    };
+    const id = refs.form.elements.id.value;
+
+    if (id === '') {
+      reqServer('/posts', 'POST', data).then(updateForm);
+    } else {
+      reqServer(`/posts/${id}`, 'PATCH', data).then(updateForm);
+    }
   }
 });
