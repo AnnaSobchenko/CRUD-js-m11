@@ -16,6 +16,7 @@ ul {
 }
 
 .post-list {
+  padding: 2px;
   &:not(:first-child) {
     border-top: 1px solid black;
   }
@@ -25,5 +26,25 @@ ul {
   small {
     display: block;
     text-align: right;
+  }
+}
+
+#create-post {
+  padding: 2px;
+  div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    input:first-child {
+      width: 70%;
+    }
+    input:last-child {
+      width: 25%;
+    }
+  }
+  textarea {
+    width: 100%;
+
+    resize: none;
   }
 }
